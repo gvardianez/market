@@ -1,0 +1,17 @@
+server:
+  port: 8192
+
+spring:
+  kafka:
+    bootstrap-servers: "192.168.99.100:9092"
+    consumer:
+      auto-offset-reset: earliest
+      group-id: "email.broker"
+
+mail:
+  host: "smtp.gmail.com"
+  port: 587
+  auth: "true"
+  starttls.enable: "true"
+  debug.enable: "true"
+  protocol: "smtp"
