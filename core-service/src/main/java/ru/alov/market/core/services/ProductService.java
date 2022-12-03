@@ -15,12 +15,14 @@ import ru.alov.market.core.entities.Product;
 import ru.alov.market.core.repositories.specifications.ProductsSpecifications;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
 
@@ -57,7 +59,12 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public Flux<Product> findListByIds(ListDto<Long> longListDto) {
+    public Flux<Product> findProductsByIds(ListDto<Long> longListDto) {
         return Flux.fromIterable(productRepository.findAllById(longListDto.getContent()));
     }
+
+    public List<Product> findProductsCreatedInPeriod(LocalDateTime start, LocalDateTime end){
+       return productRepository.findAllByCreatedAtIsBetween(start, end);
+    }
+
 }

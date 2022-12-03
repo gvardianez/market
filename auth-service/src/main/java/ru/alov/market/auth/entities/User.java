@@ -31,6 +31,9 @@ public class User {
     @Column(name = "email_status")
     private String emailStatus;
 
+    @Column(name = "subscriber")
+    private Boolean subscriber;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

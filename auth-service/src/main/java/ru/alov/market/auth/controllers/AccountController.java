@@ -3,10 +3,13 @@ package ru.alov.market.auth.controllers;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 import ru.alov.market.api.dto.ChangePasswordDto;
+import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.RecoverPasswordDto;
 import ru.alov.market.api.dto.UserProfileDto;
 import ru.alov.market.api.enums.KafkaTopic;
+import ru.alov.market.api.enums.RoleStatus;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.auth.converters.UserConverter;
 import ru.alov.market.auth.services.KafkaProducerService;
@@ -23,8 +26,8 @@ public class AccountController {
     private final KafkaProducerService kafkaProducerService;
 
     @GetMapping()
-    public UserProfileDto enterAccount(@RequestHeader String username) {
-        return userConverter.entityToDto(userService.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(String.format("User '%s' not found", username))));
+    public Mono<UserProfileDto> enterAccount(@RequestHeader String username) {
+        return userService.findMonoByUsername(username).map(userConverter::entityToDto);
     }
 
     @PutMapping("/change_password")
@@ -40,6 +43,11 @@ public class AccountController {
     @GetMapping("/confirm_email")
     public void confirmEmail(@RequestHeader String username, @RequestHeader String email) {
         kafkaProducerService.sendUserProfileDto(KafkaTopic.CONFIRM_EMAIL.toString(), new UserProfileDto(username, email));
+    }
+
+    @GetMapping("/subscribers")
+    public ListDto<String> getSubscribersEmails(@RequestHeader String role){
+        return new ListDto<>(userService.getSubscribersEmails(role));
     }
 
 }

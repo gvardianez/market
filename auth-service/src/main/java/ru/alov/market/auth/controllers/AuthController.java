@@ -43,7 +43,7 @@ public class AuthController {
             }
     )
     @PostMapping()
-    public ResponseEntity<?> login(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
         JwtResponse jwtResponse = authService.getJwtTokens(authRequest);
         return ResponseEntity.ok(jwtResponse);
     }
@@ -58,8 +58,7 @@ public class AuthController {
 //    }
 
     @PostMapping("/refresh_tokens")
-    public ResponseEntity<?> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
-        System.out.println("refresh:  " + refreshJwtRequest.getRefreshToken());
+    public ResponseEntity<JwtResponse> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
         return ResponseEntity.ok(authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken()));
     }
 

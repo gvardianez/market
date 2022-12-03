@@ -12,18 +12,20 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
+import ru.alov.market.analytics.properties.AuthServiceIntegrationProperties;
 import ru.alov.market.analytics.properties.CoreServiceIntegrationProperties;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties(
-        CoreServiceIntegrationProperties.class
+@EnableConfigurationProperties({CoreServiceIntegrationProperties.class, AuthServiceIntegrationProperties.class}
 )
 public class AppConfig {
 
     private final CoreServiceIntegrationProperties coreServiceIntegrationProperties;
+
+    private final AuthServiceIntegrationProperties authServiceIntegrationProperties;
 
     @Bean
     @LoadBalanced
@@ -33,18 +35,28 @@ public class AppConfig {
 
     @Bean
     public WebClient coreServiceWebClient() {
+        return getWebClient(coreServiceIntegrationProperties.getConnectTimeout(), coreServiceIntegrationProperties.getReadTimeout(), coreServiceIntegrationProperties.getWriteTimeout(), coreServiceIntegrationProperties.getUrl());
+    }
+
+    @Bean
+    public WebClient authServiceWebClient() {
+        return getWebClient(authServiceIntegrationProperties.getConnectTimeout(), authServiceIntegrationProperties.getReadTimeout(), authServiceIntegrationProperties.getWriteTimeout(), authServiceIntegrationProperties.getUrl());
+    }
+
+    private WebClient getWebClient(Integer connectTimeout, Integer readTimeout, Integer writeTimeout, String url) {
         TcpClient tcpClient = TcpClient
                 .create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, coreServiceIntegrationProperties.getConnectTimeout())
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(coreServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(coreServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(writeTimeout, TimeUnit.MILLISECONDS));
                 });
 
         return loadBalancedWebClientBuilder()
-                .baseUrl(coreServiceIntegrationProperties.getUrl())
+                .baseUrl(url)
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }
+
 
 }

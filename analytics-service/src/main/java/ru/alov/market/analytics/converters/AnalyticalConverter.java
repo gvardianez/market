@@ -15,7 +15,6 @@ public class AnalyticalConverter {
     public List<Analytical> orderDtoToEntities(OrderDto orderDto) {
         List<Analytical> analyticalList = new ArrayList<>();
         orderDto.getItems().forEach(orderItemDto -> analyticalList.add(new Analytical(orderItemDto.getProductId(), orderDto.getId(), orderDto.getUserName(), orderItemDto.getQuantity(), orderItemDto.getPricePerProduct(), orderDto.getUpdatedAt())));
-        System.out.println(analyticalList);
         return analyticalList;
     }
 
