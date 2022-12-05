@@ -1,23 +1,17 @@
 package ru.alov.market.api.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ListDto<T> {
 
     private List<T> content;
 
-    public ListDto() {
-    }
-
-    public ListDto(List<T> content) {
-        this.content = content;
-    }
-
-    public List<T> getContent() {
-        return content;
-    }
-
-    public void setContent(List<T> content) {
-        this.content = content;
-    }
 }

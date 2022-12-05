@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.ProductDto;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

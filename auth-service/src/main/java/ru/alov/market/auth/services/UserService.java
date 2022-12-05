@@ -10,8 +10,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 import ru.alov.market.api.dto.ChangePasswordDto;
 import ru.alov.market.api.dto.RegisterUserDto;
+import ru.alov.market.api.enums.RoleStatus;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.auth.repositories.UserRepository;
 import ru.alov.market.auth.entities.Role;
@@ -19,9 +21,8 @@ import ru.alov.market.auth.entities.User;
 import ru.alov.market.auth.validators.ChangePasswordValidator;
 import ru.alov.market.auth.validators.RegistrationValidator;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,10 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
+    public Mono<User> findMonoByUsername(String username) {
+        return Mono.just(getUser(username));
+    }
+
     @Transactional
     public User createNewUser(RegisterUserDto registerUserDto) {
         registrationValidator.validate(registerUserDto);
@@ -53,6 +58,7 @@ public class UserService {
         user.setUsername(registerUserDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         user.setEmail(registerUserDto.getEmail());
+        user.setSubscriber(true);
         user.setRoles(List.of(roleService.getUserRole()));
         user.setEmailStatus(User.UserStatus.MAIL_NOT_CONFIRMED.toString());
         return userRepository.save(user);
@@ -84,6 +90,12 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return newPassword;
+    }
+
+    public List<String> getSubscribersEmails(String role) {
+        if (role.equals(RoleStatus.ROLE_ADMIN.toString())) {
+            return userRepository.findAllBySubscriberTrue().stream().map(User::getEmail).collect(Collectors.toList());
+        } else throw new SecurityException("Недостаточно прав доступа");
     }
 
     private User getUser(String username) {

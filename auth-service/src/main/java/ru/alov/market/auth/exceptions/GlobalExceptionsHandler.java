@@ -35,4 +35,11 @@ public class GlobalExceptionsHandler {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError("BAD_CREDENTIALS", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> handleSecurityException(SecurityException e){
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new AppError(("SECURITY_ERROR"), e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
 }
