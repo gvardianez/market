@@ -12,21 +12,24 @@ import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalance
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 import ru.alov.market.core.properties.CartServiceIntegrationProperties;
+import ru.alov.market.core.properties.PromotionServiceIntegrationProperties;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(
-        CartServiceIntegrationProperties.class
+        {CartServiceIntegrationProperties.class, PromotionServiceIntegrationProperties.class}
 )
 public class AppConfig {
 
     private final CartServiceIntegrationProperties cartServiceIntegrationProperties;
+    private final PromotionServiceIntegrationProperties promotionServiceIntegrationProperties;
 
     @Bean
     @LoadBalanced
@@ -36,18 +39,37 @@ public class AppConfig {
 
     @Bean
     public WebClient cartServiceWebClient() {
+        return getWebClient(cartServiceIntegrationProperties.getConnectTimeout(),
+                cartServiceIntegrationProperties.getReadTimeout(),
+                cartServiceIntegrationProperties.getWriteTimeout(),
+                cartServiceIntegrationProperties.getUrl());
+    }
+
+    @Bean
+    public WebClient promotionServiceWebClient() {
+        return getWebClient(promotionServiceIntegrationProperties.getConnectTimeout(),
+                promotionServiceIntegrationProperties.getReadTimeout(),
+                promotionServiceIntegrationProperties.getWriteTimeout(),
+                promotionServiceIntegrationProperties.getUrl());
+    }
+
+    private WebClient getWebClient(Integer connectTimeout,
+                                   Integer readTimeout,
+                                   Integer writeTimeout,
+                                   String url) {
         TcpClient tcpClient = TcpClient
                 .create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, cartServiceIntegrationProperties.getConnectTimeout())
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(cartServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(cartServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(writeTimeout, TimeUnit.MILLISECONDS));
                 });
 
         return loadBalancedWebClientBuilder()
-                .baseUrl(cartServiceIntegrationProperties.getUrl())
+                .baseUrl(url)
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }
+
 
 }

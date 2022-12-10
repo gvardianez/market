@@ -12,17 +12,17 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
-import ru.alov.market.cart.properties.ProductServiceIntegrationProperties;
+import ru.alov.market.cart.properties.CoreServiceIntegrationProperties;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(
-        ProductServiceIntegrationProperties.class
+        CoreServiceIntegrationProperties.class
 )
 public class AppConfig {
-    private final ProductServiceIntegrationProperties productServiceIntegrationProperties;
+    private final CoreServiceIntegrationProperties coreServiceIntegrationProperties;
 
     @Bean
     @LoadBalanced
@@ -31,17 +31,17 @@ public class AppConfig {
     }
 
     @Bean
-    public WebClient productServiceWebClient() {
+    public WebClient coreServiceWebClient() {
         TcpClient tcpClient = TcpClient
                 .create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, productServiceIntegrationProperties.getConnectTimeout())
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, coreServiceIntegrationProperties.getConnectTimeout())
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(productServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(productServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(coreServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(coreServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
                 });
 
         return loadBalancedWebClientBuilder()
-                .baseUrl(productServiceIntegrationProperties.getUrl())
+                .baseUrl(coreServiceIntegrationProperties.getUrl())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }

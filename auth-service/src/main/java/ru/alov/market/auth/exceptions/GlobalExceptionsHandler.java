@@ -6,40 +6,45 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.alov.market.api.exception.AppError;
-import ru.alov.market.api.exception.ResourceNotFoundException;
+import ru.alov.market.api.exception.*;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionsHandler {
     @ExceptionHandler
-    public ResponseEntity<AppError> handleResourceNotFoundException(ResourceNotFoundException e) {
+    public ResponseEntity<AuthServiceAppError> handleResourceNotFoundException(ResourceNotFoundException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("RESOURCE_NOT_FOUND", e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_RESOURCE_NOT_FOUND.name(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleFieldValidationException(FieldValidationException e){
+    public ResponseEntity<AuthServiceAppError> handleFieldValidationException(FieldValidationException e){
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError(("VALIDATION_ERROR"), e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_FIELD_VALIDATION.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<AuthServiceAppError> handleIllegalStateException(IllegalStateException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("ILLEGAL_DATA_STATE", e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_BAD_REQUEST.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleBadCredentialsException(BadCredentialsException e) {
+    public ResponseEntity<AuthServiceAppError> handleBadCredentialsException(BadCredentialsException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("BAD_CREDENTIALS", e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_BAD_CREDENTIALS.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleSecurityException(SecurityException e){
+    public ResponseEntity<AuthServiceAppError> handleSecurityException(SecurityException e){
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError(("SECURITY_ERROR"), e.getMessage()), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_SECURITY.name(), e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<AuthServiceAppError> catchAnotherException(Exception e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_INTERNAL_EXCEPTION.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import ru.alov.market.api.dto.NewsDto;
-import ru.alov.market.api.dto.OrderDto;
-import ru.alov.market.api.dto.RecoverPasswordDto;
-import ru.alov.market.api.dto.UserProfileDto;
+import ru.alov.market.api.dto.*;
 import ru.alov.market.api.enums.RoleStatus;
 import ru.alov.market.messaging.integrations.AuthServiceIntegration;
 
@@ -40,11 +37,15 @@ public class MailService {
         sendMail(recoverPasswordDto.getEmail(), "Пароль успешно изменен", "Новый пароль: " + recoverPasswordDto.getPassword());
     }
 
-    public void sendNewsMessage(String role, NewsDto newsDto) throws MessagingException {
-        if (role.equals(RoleStatus.ROLE_ADMIN.toString())) {
-            List<String> emails = authServiceIntegration.getSubscribersEmails(RoleStatus.ROLE_ADMIN.toString()).getContent();
-            sendMail(emails.toArray(new String[0]), newsDto.getSubject(), newsDto.getMessage());
-        } else throw new SecurityException("Недостаточно прав доступа");
+    public void sendNewsMessage(NewsDto newsDto) throws MessagingException {
+        List<String> emails = authServiceIntegration.getSubscribersEmails(RoleStatus.ROLE_ADMIN.toString()).getContent();
+        sendMail(emails.toArray(new String[0]), newsDto.getSubject(), newsDto.getMessage());
+
+    }
+
+    public void sendPromotionMessage(PromotionDto promotionDto) throws MessagingException {
+        List<String> emails = authServiceIntegration.getSubscribersEmails(RoleStatus.ROLE_ADMIN.toString()).getContent();
+        sendMail(emails.toArray(new String[0]), promotionDto.getTitle(), promotionDto.getDescription());
     }
 
     private void sendMail(String email, String subject, String text) throws MessagingException {

@@ -3,8 +3,7 @@ package ru.alov.market.cart.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import ru.alov.market.api.dto.ProductDto;
-import ru.alov.market.cart.integrations.ProductServiceIntegration;
+import ru.alov.market.cart.integrations.CoreServiceIntegration;
 import ru.alov.market.cart.utils.Cart;
 
 import java.util.function.Consumer;
@@ -13,7 +12,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final ProductServiceIntegration productServiceIntegration;
+    private final CoreServiceIntegration coreServiceIntegration;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public Cart getCurrentCart(String cartId) {
@@ -25,7 +24,7 @@ public class CartService {
     }
 
     public void addToCart(String cartId, Long productId) {
-        productServiceIntegration.findById(productId).subscribe(productDto -> execute(cartId, cart -> cart.add(productDto)));
+        coreServiceIntegration.findById(productId).subscribe(productDto -> execute(cartId, cart -> cart.add(productDto)));
     }
 
     public void removeFromCart(String cartId, Long productId) {

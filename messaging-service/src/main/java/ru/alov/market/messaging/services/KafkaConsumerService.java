@@ -3,9 +3,12 @@ package ru.alov.market.messaging.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.alov.market.api.dto.OrderDto;
+import ru.alov.market.api.dto.PromotionDto;
 import ru.alov.market.api.dto.RecoverPasswordDto;
 import ru.alov.market.api.dto.UserProfileDto;
+import ru.alov.market.messaging.telegram.TelegramBot;
 
 import javax.mail.MessagingException;
 
@@ -14,7 +17,10 @@ import javax.mail.MessagingException;
 public class KafkaConsumerService {
 
     private final MailService mailService;
+    private final TelegramBot telegramBot;
+
     private static final String USER_PROFILE_DTO_TOPIC = "USER_PROFILE_DTO";
+    private static final String PROMOTION_DTO_TOPIC = "PROMOTION_DTO";
     private static final String ORDER_DTO_TOPIC = "ORDER_DTO";
     private static final String RECOVER_PASSWORD_DTO_TOPIC = "RECOVER_PASSWORD_DTO";
     private static final String CONFIRM_EMAIL_TOPIC = "CONFIRM_EMAIL";
@@ -37,6 +43,12 @@ public class KafkaConsumerService {
     @KafkaListener(topics = RECOVER_PASSWORD_DTO_TOPIC, groupId = "recover-password.server", containerFactory = "recoverPasswordDtoContainerFactory")
     public void listenerRecoverPassword(RecoverPasswordDto recoverPasswordDto) throws MessagingException {
         mailService.sendRecoverPasswordMail(recoverPasswordDto);
+    }
+
+    @KafkaListener(topics = PROMOTION_DTO_TOPIC, groupId = "promotion.server", containerFactory = "promotionDtoContainerFactory")
+    public void listenerPromotion(PromotionDto promotionDto) throws MessagingException, TelegramApiException {
+        mailService.sendPromotionMessage(promotionDto);
+        telegramBot.sendMessageInChannel(promotionDto.getTitle() + "\n" + promotionDto.getDescription());
     }
 
 }

@@ -25,11 +25,10 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
-            log.info("Start");
             ServerHttpRequest request = exchange.getRequest();
 
-            if (request.getHeaders().containsKey("username")) {
-                return this.onError(exchange, "Invalid header username", HttpStatus.BAD_REQUEST);
+            if (request.getHeaders().containsKey("username") || request.getHeaders().containsKey("email") || request.getHeaders().containsKey("role")) {
+                return this.onError(exchange, "Invalid header username or email", HttpStatus.BAD_REQUEST);
             }
 
             if (!isAuthMissing(request)) {
@@ -71,7 +70,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         exchange.getRequest().mutate()
                 .header("username", claims.getSubject())
                 .header("email", (String) claims.get("email"))
-//                .header("role", String.valueOf(claims.get("role")))
+                .header("role", String.valueOf(claims.get("role")))
                 .build();
     }
 }

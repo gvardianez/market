@@ -6,20 +6,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.alov.market.api.dto.*;
 import ru.alov.market.api.exception.AppError;
 import ru.alov.market.auth.services.AuthService;
-import ru.alov.market.auth.utils.JwtTokenUtil;
-import ru.alov.market.auth.services.UserService;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,9 +34,9 @@ public class AuthController {
             }
     )
     @PostMapping()
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
-        JwtResponse jwtResponse = authService.getJwtTokens(authRequest);
-        return ResponseEntity.ok(jwtResponse);
+    public ResponseEntity<JwtResponseDto> login(@RequestBody JwtRequestDto authRequest) {
+        JwtResponseDto jwtResponseDto = authService.getJwtTokens(authRequest);
+        return ResponseEntity.ok(jwtResponseDto);
     }
 
 //    @PostMapping()
@@ -58,7 +49,7 @@ public class AuthController {
 //    }
 
     @PostMapping("/refresh_tokens")
-    public ResponseEntity<JwtResponse> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
+    public ResponseEntity<JwtResponseDto> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
         return ResponseEntity.ok(authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken()));
     }
 

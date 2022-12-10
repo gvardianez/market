@@ -2,7 +2,7 @@ package ru.alov.market.auth.validators;
 
 import org.springframework.stereotype.Component;
 import ru.alov.market.api.dto.RegisterUserDto;
-import ru.alov.market.auth.exceptions.FieldValidationException;
+import ru.alov.market.api.exception.FieldValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
