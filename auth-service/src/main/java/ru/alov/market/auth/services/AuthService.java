@@ -4,21 +4,16 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.alov.market.api.dto.JwtRequest;
-import ru.alov.market.api.dto.JwtResponse;
+import ru.alov.market.api.dto.JwtRequestDto;
+import ru.alov.market.api.dto.JwtResponseDto;
 import ru.alov.market.api.dto.UserProfileDto;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.auth.converters.UserConverter;
 import ru.alov.market.auth.entities.User;
 import ru.alov.market.auth.utils.JwtTokenUtil;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -36,14 +31,14 @@ public class AuthService {
 //    @Value("${jwt.refresh.lifetime}")
 //    private Integer refreshTokenLifetime;
 
-    public JwtResponse getJwtTokens(@NonNull JwtRequest jwtRequest) {
-        User user = authenticateUser(jwtRequest.getUsername(), jwtRequest.getPassword());
+    public JwtResponseDto getJwtTokens(@NonNull JwtRequestDto jwtRequestDto) {
+        User user = authenticateUser(jwtRequestDto.getUsername(), jwtRequestDto.getPassword());
         String accessToken = jwtTokenUtil.generateAccessToken(userConverter.entityToDto(user));
         String refreshToken = jwtTokenUtil.generateRefreshToken(userConverter.entityToDto(user));
         String key = usernamePrefix + user.getUsername();
         redisTemplate.opsForValue().set(key, refreshToken);
 //        setCookie(response, refreshToken);
-        return new JwtResponse(accessToken, refreshToken);
+        return new JwtResponseDto(accessToken, refreshToken);
     }
 
 //    private void setCookie(HttpServletResponse response, String refreshToken) {
@@ -64,7 +59,7 @@ public class AuthService {
 //        response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 //    }
 
-    public JwtResponse refreshJwtTokens(@NonNull String refreshToken) {
+    public JwtResponseDto refreshJwtTokens(@NonNull String refreshToken) {
         String key = usernamePrefix + jwtTokenUtil.getUsernameFromRefreshToken(refreshToken);
         if (!redisTemplate.hasKey(key)) {
             throw new ResourceNotFoundException("Вы не найдены в системе. Пожалуйста, перезайдите");
@@ -77,7 +72,7 @@ public class AuthService {
         String newAccessToken = jwtTokenUtil.generateAccessToken(userProfileDto);
         String newRefreshToken = jwtTokenUtil.generateRefreshToken(userProfileDto);
         redisTemplate.opsForValue().set(key, newRefreshToken);
-        return new JwtResponse(newAccessToken, newRefreshToken);
+        return new JwtResponseDto(newAccessToken, newRefreshToken);
     }
 
 //    public JwtResponse refreshJwtTokens(@NonNull String refreshToken, HttpServletResponse response) {

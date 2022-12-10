@@ -5,34 +5,52 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.alov.market.api.exception.AppError;
-import ru.alov.market.api.exception.ResourceNotFoundException;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import ru.alov.market.api.exception.*;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionsHandler {
     @ExceptionHandler
-    public ResponseEntity<AppError> handleResourceNotFoundException(ResourceNotFoundException e) {
+    public ResponseEntity<CoreServiceAppError> handleResourceNotFoundException(ResourceNotFoundException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("RESOURCE_NOT_FOUND", e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_RESOURCE_NOT_FOUND.name(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<CoreServiceAppError> handleIllegalStateException(IllegalStateException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("ILLEGAL_DATA_STATE", e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_BAD_REQUEST.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleFieldValidationException(FieldValidationException e) {
+    public ResponseEntity<CoreServiceAppError> handleFieldValidationException(FieldValidationException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("INVALID_FIELD_VALUE", e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_FIELD_VALIDATION.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchCartServiceIntegrationException(CartServiceIntegrationException e) {
+    public ResponseEntity<CoreServiceAppError> catchCartServiceIntegrationException(CartServiceIntegrationException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AppError("CART_SERVICE_INTEGRATION_ERROR", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_CART_INTEGRATION.name(), e.getMessage()), HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<CoreServiceAppError> catchPromotionServiceIntegrationException(PromotionServiceIntegrationException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_PROMOTION_INTEGRATION.name(), e.getMessage()), HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<CoreServiceAppError> catchWebClientRequestException(WebClientRequestException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_WEBCLIENT_REQUEST.name(), e.getMessage()), HttpStatus.REQUEST_TIMEOUT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<CoreServiceAppError> catchAnotherException(Exception e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_INTERNAL_EXCEPTION.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

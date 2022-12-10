@@ -2,8 +2,8 @@ package ru.alov.market.cart.utils;
 
 import lombok.Data;
 import ru.alov.market.api.dto.ProductDto;
+import ru.alov.market.api.exception.FieldValidationException;
 import ru.alov.market.api.exception.ResourceNotFoundException;
-import ru.alov.market.cart.exceptions.FieldValidationException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

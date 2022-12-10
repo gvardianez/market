@@ -18,6 +18,7 @@ import ru.alov.market.api.exception.AppError;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.converters.PageConverter;
 import ru.alov.market.core.converters.ProductConverter;
+import ru.alov.market.core.integrations.PromotionServiceIntegration;
 import ru.alov.market.core.services.ProductService;
 
 import java.time.LocalDateTime;
@@ -70,12 +71,12 @@ public class ProductController {
         return productConverter.entityToDto(productService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
     }
 
-    @PostMapping("/get_products")
+    @PostMapping("/get-products")
     public Flux<ProductDto> getProductsByIds(@RequestBody ListDto<Long> longListDto) {
         return productService.findProductsByIds(longListDto).map(productConverter::entityToDto);
     }
 
-    @GetMapping("/get_products_by_period")
+    @GetMapping("/get-products-by-period")
     public ListDto<ProductDto> getProductsByCreatedPeriod(@RequestParam(name = "start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start, @RequestParam(name = "end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         return new ListDto<>(productService.findProductsCreatedInPeriod(start, end).stream().map(productConverter::entityToDto).collect(Collectors.toList()));
     }
@@ -90,7 +91,7 @@ public class ProductController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createNewProducts(@RequestBody ProductDto productDto) {
+    public void createNewProduct(@RequestBody ProductDto productDto) {
         productService.createNewProduct(productDto);
     }
 

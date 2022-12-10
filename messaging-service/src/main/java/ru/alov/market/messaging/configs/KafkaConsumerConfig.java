@@ -12,6 +12,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import ru.alov.market.api.dto.OrderDto;
+import ru.alov.market.api.dto.PromotionDto;
 import ru.alov.market.api.dto.RecoverPasswordDto;
 import ru.alov.market.api.dto.UserProfileDto;
 
@@ -67,6 +68,21 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, RecoverPasswordDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(recoverPasswordDtoConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, PromotionDto> promotionDtoConsumerFactory() {
+        JsonDeserializer<PromotionDto> deserializer = new JsonDeserializer<>(PromotionDto.class);
+        return new DefaultKafkaConsumerFactory<>(giveProperties(deserializer
+        ), new StringDeserializer(), deserializer);
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, PromotionDto>> promotionDtoContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PromotionDto> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(promotionDtoConsumerFactory());
         return factory;
     }
 

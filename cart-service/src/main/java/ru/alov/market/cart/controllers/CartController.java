@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.alov.market.api.dto.CartDto;
-import ru.alov.market.api.dto.StringResponse;
+import ru.alov.market.api.dto.StringResponseDto;
 import ru.alov.market.cart.converters.CartConverter;
 import ru.alov.market.cart.services.CartService;
 
@@ -27,13 +27,13 @@ public class CartController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = StringResponse.class))
+                            content = @Content(schema = @Schema(implementation = StringResponseDto.class))
                     )
             }
     )
     @GetMapping("/generate_id")
-    public StringResponse  generateGuestCartId() {
-        return new StringResponse(UUID.randomUUID().toString());
+    public StringResponseDto generateGuestCartId() {
+        return new StringResponseDto(UUID.randomUUID().toString());
     }
 
     @Operation(
