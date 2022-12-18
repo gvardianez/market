@@ -6,6 +6,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +24,22 @@ public class Promotion {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
     @Column(name = "title")
     private String title;
 
+    @NotBlank
     @Column(name = "description")
     private String description;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
     private List<PromotionItem> promotionItems;
 
+    @FutureOrPresent
     @Column(name = "start_at")
     private LocalDateTime startedAt;
 
+    @Future
     @Column(name = "end_at")
     private LocalDateTime endedAt;
 

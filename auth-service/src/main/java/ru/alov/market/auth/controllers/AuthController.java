@@ -39,24 +39,9 @@ public class AuthController {
         return ResponseEntity.ok(jwtResponseDto);
     }
 
-//    @PostMapping()
-//    public ResponseEntity<?> login(@RequestBody JwtRequest authRequest, HttpServletRequest request, HttpServletResponse response) {
-//        System.out.println(Arrays.toString(request.getCookies()));
-//        JwtResponse jwtResponse = authService.getJwtTokens(authRequest, response);
-//        System.out.println(jwtResponse.getAccessToken());
-//        System.out.println(response.getHeader(HttpHeaders.SET_COOKIE));
-//        return ResponseEntity.ok(jwtResponse);
-//    }
-
-    @PostMapping("/refresh_tokens")
+    @PostMapping("/refresh-tokens")
     public ResponseEntity<JwtResponseDto> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
         return ResponseEntity.ok(authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken()));
     }
 
-//    @GetMapping("/refresh_tokens")
-//    public ResponseEntity<?> refreshTokens(@CookieValue(value = "refresh-token", required = false) String refreshToken, HttpServletRequest request,HttpServletResponse response) {
-//        System.out.println(Arrays.toString(request.getCookies()));
-//        System.out.println(refreshToken);
-//        return ResponseEntity.ok(authService.refreshJwtTokens(refreshToken, response));
-//    }
 }

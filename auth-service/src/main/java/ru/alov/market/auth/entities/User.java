@@ -1,17 +1,22 @@
 package ru.alov.market.auth.entities;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
-@Data
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
+@Setter
+@Getter
 @Table(name = "users")
 public class User {
     @Id
@@ -19,21 +24,30 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
     @Column(name = "username")
     private String username;
 
+    @NotNull
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{5,}$",
+            message = "Неверный формат пароля")
     @Column(name = "password")
     private String password;
 
+    @NotNull
+    @Email
     @Column(name = "email")
     private String email;
 
+    @NotBlank
     @Column(name = "email_status")
     private String emailStatus;
 
+    @NotNull
     @Column(name = "subscriber")
     private Boolean subscriber;
 
+    @NotEmpty
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -47,15 +61,6 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public User(Long id, String username, String password, String email, String emailStatus, Collection<Role> roles) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.emailStatus = emailStatus;
-        this.roles = roles;
-    }
 
     public enum UserStatus {
         MAIL_CONFIRMED, MAIL_NOT_CONFIRMED

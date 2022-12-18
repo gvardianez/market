@@ -3,6 +3,8 @@ package ru.alov.market.analytics.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.alov.market.analytics.integrations.AuthServiceIntegration;
 import ru.alov.market.analytics.integrations.CoreServiceIntegration;
@@ -12,6 +14,7 @@ import ru.alov.market.analytics.repositories.projections.AnalyticalProductsQuant
 import ru.alov.market.analytics.repositories.projections.AnalyticalUserProductsStatistic;
 import ru.alov.market.api.dto.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class AnalyticalService {
 
@@ -27,7 +31,7 @@ public class AnalyticalService {
     private final AuthServiceIntegration authServiceIntegration;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public Mono<List<ProductRatingDto>> getProductQuantityRatingYesterday(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
+    public Flux<ProductRatingDto> getProductQuantityRatingYesterday(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
         List<ProductRatingDto> productQuantityRating = (List<ProductRatingDto>) redisTemplate.opsForValue().get(LocalDate.from(localDateTimeStart).toString());
         if (productQuantityRating == null) {
             List<AnalyticalProductsQuantityRating> analyticalProductsQuantityRatings = analyticalRepository.findProductQuantityRating(localDateTimeStart, localDateTimeEnd);
@@ -35,25 +39,25 @@ public class AnalyticalService {
                     .stream()
                     .map(AnalyticalProductsQuantityRating::getProductId)
                     .collect(Collectors.toList());
-            Mono<List<ProductRatingDto>> listMono = getProductQuantityRating(analyticalProductsQuantityRatings, productIds);
-            return listMono.doOnSuccess(productQuantityRatingDtos -> redisTemplate.opsForValue().set(LocalDate.from(localDateTimeStart).toString(), productQuantityRatingDtos));
-        } else return Mono.just(productQuantityRating);
+            Mono<List<ProductRatingDto>> listMono = getProductQuantityRating(analyticalProductsQuantityRatings, productIds).collectList();
+            return listMono.doOnSuccess(productQuantityRatingDtos -> redisTemplate.opsForValue().set(LocalDate.from(localDateTimeStart).toString(), productQuantityRatingDtos)).flatMapIterable(productRatingDtoList -> productRatingDtoList);
+        } else return Flux.fromIterable(productQuantityRating);
     }
 
-    public Mono<List<ProductRatingDto>> getProductQuantityRatingPeriod(RequestRatingDto requestRatingDto) {
+    public Flux<ProductRatingDto> getProductQuantityRatingPeriod(@Valid RequestRatingDto requestRatingDto) {
         if (requestRatingDto.getCount() != null) {
             return getProductQuantityRatingPeriod(requestRatingDto.getLocalDateTimeStart(), requestRatingDto.getLocalDateTimeEnd(), requestRatingDto.getCount());
         } else
             return getProductQuantityRatingPeriod(requestRatingDto.getLocalDateTimeStart(), requestRatingDto.getLocalDateTimeEnd());
     }
 
-    private Mono<List<ProductRatingDto>> getProductQuantityRatingPeriod(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
+    private Flux<ProductRatingDto> getProductQuantityRatingPeriod(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
         List<AnalyticalProductsQuantityRating> analyticalProductsQuantityRatings = analyticalRepository.findProductQuantityRating(localDateTimeStart, localDateTimeEnd);
         List<Long> productIds = getProductIds(analyticalProductsQuantityRatings);
         return getProductQuantityRating(analyticalProductsQuantityRatings, productIds);
     }
 
-    private Mono<List<ProductRatingDto>> getProductQuantityRatingPeriod(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd, Long count) {
+    private Flux<ProductRatingDto> getProductQuantityRatingPeriod(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd, Long count) {
         List<AnalyticalProductsQuantityRating> analyticalProductsQuantityRatings = analyticalRepository.findProductQuantityRatingWithCount(localDateTimeStart, localDateTimeEnd, count);
         List<Long> productIds = getProductIds(analyticalProductsQuantityRatings);
         return getProductQuantityRating(analyticalProductsQuantityRatings, productIds);
@@ -66,7 +70,7 @@ public class AnalyticalService {
                 .collect(Collectors.toList());
     }
 
-    private Mono<List<ProductRatingDto>> getProductQuantityRating(List<AnalyticalProductsQuantityRating> analyticalProductsQuantityRatings, List<Long> productIds) {
+    private Flux<ProductRatingDto> getProductQuantityRating(List<AnalyticalProductsQuantityRating> analyticalProductsQuantityRatings, List<Long> productIds) {
         return coreServiceIntegration.getListProductDto(new ListDto<>(productIds))
                                      .collectList()
                                      .map(productDtos -> {
@@ -82,27 +86,27 @@ public class AnalyticalService {
                                                  }
                                              }
                                          return productRatingDtoList;
-                                     });
+                                     }).flatMapIterable(productRatingDtoList -> productRatingDtoList);
     }
 
-    public Mono<List<ProductRatingDto>> getProductQuantityAndCostRating(RequestRatingDto requestRatingDto) {
+    public Flux<ProductRatingDto> getProductQuantityAndCostRating(@Valid RequestRatingDto requestRatingDto) {
         if (requestRatingDto.getCount() != null) {
             return getProductQuantityAndCostRating(requestRatingDto.getLocalDateTimeStart(), requestRatingDto.getLocalDateTimeEnd(), requestRatingDto.getCount());
         } else
             return getProductQuantityAndCostRating(requestRatingDto.getLocalDateTimeStart(), requestRatingDto.getLocalDateTimeEnd());
     }
 
-    private Mono<List<ProductRatingDto>> getProductQuantityAndCostRating(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
+    private Flux<ProductRatingDto> getProductQuantityAndCostRating(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
         List<AnalyticalProductsQuantityAndCostRating> analyticalProductsQuantityAndCostRatings = analyticalRepository.findProductQuantityAndCostRating(localDateTimeStart, localDateTimeEnd);
-        return getListMono(analyticalProductsQuantityAndCostRatings);
+        return getFluxProductRatingDto(analyticalProductsQuantityAndCostRatings);
     }
 
-    private Mono<List<ProductRatingDto>> getProductQuantityAndCostRating(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd, Long count) {
+    private Flux<ProductRatingDto> getProductQuantityAndCostRating(LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd, Long count) {
         List<AnalyticalProductsQuantityAndCostRating> analyticalProductsQuantityAndCostRatings = analyticalRepository.findProductQuantityAndCostRatingWithCount(localDateTimeStart, localDateTimeEnd, count);
-        return getListMono(analyticalProductsQuantityAndCostRatings);
+        return getFluxProductRatingDto(analyticalProductsQuantityAndCostRatings);
     }
 
-    private Mono<List<ProductRatingDto>> getListMono(List<AnalyticalProductsQuantityAndCostRating> analyticalProductsQuantityAndCostRatings) {
+    private Flux<ProductRatingDto> getFluxProductRatingDto(List<AnalyticalProductsQuantityAndCostRating> analyticalProductsQuantityAndCostRatings) {
         List<Long> productIds = analyticalProductsQuantityAndCostRatings
                 .stream()
                 .map(AnalyticalProductsQuantityAndCostRating::getProductId)
@@ -122,16 +126,17 @@ public class AnalyticalService {
                                                  }
                                              }
                                          return productRatingDtoList;
-                                     });
+                                     }).flatMapIterable(productRatingDtoList -> productRatingDtoList);
     }
 
-    public Mono<UserProductsRatingDto> getUserProductsStatistic(String username, LocalDateTime localDateTimeStart, LocalDateTime localDateTimeEnd) {
-        List<AnalyticalUserProductsStatistic> analyticalUserProductsStatistics = analyticalRepository.findUserProductStatistic(username, localDateTimeStart, localDateTimeEnd);
+    public Mono<UserProductsRatingDto> getUserProductsStatistic(@Valid RequestRatingDto requestRatingDto) {
+        List<AnalyticalUserProductsStatistic> analyticalUserProductsStatistics = analyticalRepository
+                .findUserProductStatistic(requestRatingDto.getUsername(), requestRatingDto.getLocalDateTimeStart(), requestRatingDto.getLocalDateTimeEnd());
         List<Long> productIds = analyticalUserProductsStatistics
                 .stream()
                 .map(AnalyticalUserProductsStatistic::getProductId)
                 .collect(Collectors.toList());
-        return authServiceIntegration.getUserProfileDto(username)
+        return authServiceIntegration.getUserProfileDto(requestRatingDto.getUsername())
                                      .zipWith(coreServiceIntegration.getListProductDto(new ListDto<>(productIds)).collectList(), (userProfileDto, productDtos) -> {
                                          List<ProductRatingDto> productRatingDtoList = new ArrayList<>();
                                          for (ProductDto productDto : productDtos) {
@@ -146,5 +151,6 @@ public class AnalyticalService {
                                          return new UserProductsRatingDto(userProfileDto, productRatingDtoList);
                                      });
     }
+
 
 }

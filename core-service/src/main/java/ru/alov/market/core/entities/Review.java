@@ -5,6 +5,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,16 +23,22 @@ public class Review {
     @Column(name = "id")
     private Long id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @NotBlank
     @Column(name = "username")
     private String username;
 
+    @NotNull
+    @Min(1)
+    @Max(5)
     @Column(name = "grade")
     private Integer grade;
 
+    @NotBlank
     @Column(name = "description")
     private String description;
 

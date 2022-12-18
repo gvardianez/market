@@ -3,6 +3,7 @@ package ru.alov.market.messaging.telegram;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,8 +12,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.alov.market.messaging.configs.TelegramBotConfig;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotBlank;
 
 @Slf4j
+@Validated
 @Component
 @RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
@@ -52,7 +55,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessageInChannel(String message) throws TelegramApiException {
+    public void sendMessageInChannel(@NotBlank String message) throws TelegramApiException {
         prepareAndSendMessage(botConfig.getChatId(), message);
     }
 

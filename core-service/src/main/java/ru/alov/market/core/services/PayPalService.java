@@ -4,20 +4,23 @@ import com.paypal.orders.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.entities.Order;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class PayPalService {
     private final OrderService orderService;
 
     @Transactional
-    public OrderRequest createOrderRequest(Long orderId) {
+    public OrderRequest createOrderRequest(@NotNull Long orderId) {
         Order order = orderService.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Заказ не найден"));
 
         if (!order.getStatus().equals(Order.OrderStatus.CREATED.toString())) throw new IllegalStateException("Неверный статус заказа:" + order.getStatus());

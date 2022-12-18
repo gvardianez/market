@@ -3,6 +3,7 @@ package ru.alov.market.promotion.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.alov.market.api.dto.*;
@@ -11,6 +12,8 @@ import ru.alov.market.promotion.converters.mapstruct.PromotionMapper;
 import ru.alov.market.promotion.services.KafkaProducerService;
 import ru.alov.market.promotion.services.PromotionService;
 
+import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +52,7 @@ public class PromotionController {
     }
 
     @GetMapping("/add-product")
-    public void addProductToNewPromotion(@RequestParam Long productId, @RequestParam(required = false) Float discount) {
+    public void addProductToNewPromotion(@RequestParam Long productId, @RequestParam Float discount) {
         promotionService.addProductToNewPromotion(productId, discount);
     }
 

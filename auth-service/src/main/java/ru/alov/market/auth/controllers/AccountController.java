@@ -4,12 +4,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import ru.alov.market.api.dto.ChangePasswordDto;
+import ru.alov.market.api.dto.ChangePasswordRequestDto;
 import ru.alov.market.api.dto.ListDto;
-import ru.alov.market.api.dto.RecoverPasswordDto;
+import ru.alov.market.api.dto.RecoverPasswordRequestDto;
 import ru.alov.market.api.dto.UserProfileDto;
 import ru.alov.market.api.enums.KafkaTopic;
-import ru.alov.market.api.enums.RoleStatus;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.auth.converters.UserConverter;
 import ru.alov.market.auth.services.KafkaProducerService;
@@ -30,19 +29,20 @@ public class AccountController {
         return userService.findMonoByUsername(username).map(userConverter::entityToDto);
     }
 
-    @PutMapping("/change_password")
-    public void changePassword(@RequestHeader String username, @RequestBody ChangePasswordDto changePasswordDto) {
-        userService.changePassword(username, changePasswordDto);
+    @PutMapping("/change-password")
+    public void changePassword(@RequestHeader String username, @RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
+        userService.changePassword(username, changePasswordRequestDto);
     }
 
-    @GetMapping("/recover_password")
+    @GetMapping("/recover-password")
     public void recoverPassword(@RequestHeader String username, @RequestHeader String email) {
-        kafkaProducerService.sendRecoverPasswordDto(KafkaTopic.RECOVER_PASSWORD_DTO.toString(), new RecoverPasswordDto(email, userService.recoverPassword(username)));
+        kafkaProducerService.sendRecoverPasswordDto(KafkaTopic.RECOVER_PASSWORD_DTO.toString(), new RecoverPasswordRequestDto(email, userService.recoverPassword(username)));
     }
 
-    @GetMapping("/confirm_email")
-    public void confirmEmail(@RequestHeader String username, @RequestHeader String email) {
-        kafkaProducerService.sendUserProfileDto(KafkaTopic.CONFIRM_EMAIL.toString(), new UserProfileDto(username, email));
+    @GetMapping("/confirm-email")
+    public void confirmEmail(@RequestHeader String username) {
+        kafkaProducerService.sendUserProfileDto(KafkaTopic.CONFIRM_EMAIL.toString(), userConverter
+                .entityToDto(userService.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(String.format("Пользователь '%s' не найден", username)))));
     }
 
     @GetMapping("/subscribers")

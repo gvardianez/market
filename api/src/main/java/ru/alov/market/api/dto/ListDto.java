@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -12,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ListDto<T> {
 
+    @NotNull
     private List<T> content;
 
 }

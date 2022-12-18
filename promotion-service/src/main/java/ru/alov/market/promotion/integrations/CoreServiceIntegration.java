@@ -37,8 +37,8 @@ public class CoreServiceIntegration {
                     if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_FIELD_VALIDATION.name())) {
                         return new CoreServiceIntegrationException(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_FIELD_VALIDATION.name() + ": " + body.getMessage());
                     }
-                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_PROMOTION_INTEGRATION.name())) {
-                        return new CoreServiceIntegrationException(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_PROMOTION_INTEGRATION.name() + ": " + body.getMessage());
+                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_CART_INTEGRATION.name())) {
+                        return new CoreServiceIntegrationException(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_CART_INTEGRATION.name() + ": " + body.getMessage());
                     }
                     return new CoreServiceIntegrationException(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_BAD_REQUEST.name() + ": " + body.getMessage());
                 }

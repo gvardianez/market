@@ -32,7 +32,6 @@ public class JwtTokenUtilTest {
         Assertions.assertEquals(roleList.get(0), "ROLE_ADMIN");
 
         Thread.sleep(1000);
-
         Assertions.assertThrows(ExpiredJwtException.class, () -> jwtTokenUtil.getUsernameFromAccessToken(token));
     }
 

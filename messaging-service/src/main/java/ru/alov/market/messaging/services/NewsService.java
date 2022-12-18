@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.alov.market.api.dto.ListDto;
-import ru.alov.market.api.dto.NewsDto;
+import ru.alov.market.api.dto.NewsCreateDto;
 import ru.alov.market.api.dto.ProductDto;
-import ru.alov.market.api.enums.RoleStatus;
 import ru.alov.market.messaging.integrations.CoreServiceIntegration;
 import ru.alov.market.messaging.telegram.TelegramBot;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,9 +24,9 @@ public class NewsService {
     private final TelegramBot telegramBot;
     private final CoreServiceIntegration coreServiceIntegration;
 
-    public void sendAnyNews(NewsDto newsDto) throws TelegramApiException, MessagingException {
-            telegramBot.sendMessageInChannel(newsDto.getMessage());
-            mailService.sendNewsMessage(newsDto);
+    public void sendAnyNews(@Valid NewsCreateDto newsCreateDto) throws TelegramApiException, MessagingException {
+            telegramBot.sendMessageInChannel(newsCreateDto.getMessage());
+            mailService.sendNewsMessage(newsCreateDto);
     }
 
     @Scheduled(cron = "${news.products.scheduler}")
@@ -36,8 +35,8 @@ public class NewsService {
         LocalDateTime localDateTimeEnd = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0));
         List<ProductDto> listDto = coreServiceIntegration.getProductsByCreatedPeriod(localDateTimeStart, localDateTimeEnd).getContent();
         if (!listDto.isEmpty()) {
-            NewsDto newsDto = new NewsDto();
-            newsDto.setSubject(NewsDto.SubjectTypes.NEW_PRODUCTS.getSubject());
+            NewsCreateDto newsCreateDto = new NewsCreateDto();
+            newsCreateDto.setSubject(NewsCreateDto.SubjectTypes.NEW_PRODUCTS.getSubject());
             StringBuilder message = new StringBuilder();
             listDto.forEach(productDto -> message
                             .append(productDto.getTitle())
@@ -46,10 +45,10 @@ public class NewsService {
                             .append(" ,Категория: ")
                             .append(productDto.getCategoryTitle())
                             .append("\n\n"));
-            newsDto.setMessage(message.toString());
+            newsCreateDto.setMessage(message.toString());
 
-            mailService.sendNewsMessage(newsDto);
-            telegramBot.sendMessageInChannel(newsDto.getSubject() + ":\n" + newsDto.getMessage());
+            mailService.sendNewsMessage(newsCreateDto);
+            telegramBot.sendMessageInChannel(newsCreateDto.getSubject() + ":\n" + newsCreateDto.getMessage());
         }
     }
 

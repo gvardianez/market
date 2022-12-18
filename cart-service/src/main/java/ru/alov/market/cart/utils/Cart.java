@@ -5,13 +5,20 @@ import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.FieldValidationException;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class Cart {
+
+    @NotNull
     private List<CartItem> items;
+
+    @NotNull
+    @PositiveOrZero
     private BigDecimal totalPrice;
 
     public Cart() {
@@ -62,7 +69,6 @@ public class Cart {
     }
 
     public void setProductQuantity(Long id, Integer newQuantity) {
-        if (newQuantity < 0) throw new FieldValidationException("New quantity must be at least zero");
         if (newQuantity == 0) {
             remove(id);
             return;

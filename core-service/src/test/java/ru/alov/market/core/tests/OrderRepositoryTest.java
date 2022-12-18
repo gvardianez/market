@@ -11,6 +11,7 @@ import ru.alov.market.core.entities.OrderItem;
 import ru.alov.market.core.entities.Product;
 import ru.alov.market.core.repositories.OrderRepository;
 
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -41,11 +42,19 @@ public class OrderRepositoryTest {
         productBread.setPrice(BigDecimal.valueOf(25));
         productBread.setCategory(category);
 
-        Order order = new Order("Vasya Dudkin", List.of(new OrderItem(productBread, 3), new OrderItem(productButter, 2)), BigDecimal.valueOf(175));
-        order = orderRepository.save(order);
+        Order order = new Order();
+        OrderItem bread = new OrderItem(order, productBread, BigDecimal.valueOf(50), BigDecimal.valueOf(100), 2);
+        OrderItem butter = new OrderItem(order, productButter, BigDecimal.valueOf(25), BigDecimal.valueOf(50), 2);
+        order.setEmail("1232@awe.ya.ru");
+        order.setStatus("CREATED");
+        order.setTotalPrice(BigDecimal.valueOf(150));
+        order.setAddress("Moscow");
+        order.setPhone("37542937534");
+        order.setItems(List.of(bread, butter));
+        order.setUsername("Vasya");
+        orderRepository.save(order);
         Assertions.assertEquals(1L, order.getId());
         Assertions.assertNotNull(order.getItems().get(0).getId());
-
     }
 
 }

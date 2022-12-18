@@ -1,14 +1,20 @@
 package ru.alov.market.auth.entities;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Setter
+@Getter
+@EqualsAndHashCode(of = "id")
 @Table(name = "roles")
 public class Role {
     @Id
@@ -16,6 +22,7 @@ public class Role {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
     @Column(name = "name")
     private String name;
 

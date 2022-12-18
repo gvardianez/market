@@ -3,19 +3,25 @@ package ru.alov.market.cart.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.alov.market.cart.integrations.CoreServiceIntegration;
 import ru.alov.market.cart.utils.Cart;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.function.Consumer;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class CartService {
 
     private final CoreServiceIntegration coreServiceIntegration;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public Cart getCurrentCart(String cartId) {
+    public Cart getCurrentCart(@NotBlank String cartId) {
         if (!redisTemplate.hasKey(cartId)) {
             Cart cart = new Cart();
             redisTemplate.opsForValue().set(cartId, cart);
@@ -23,19 +29,19 @@ public class CartService {
         return (Cart) redisTemplate.opsForValue().get(cartId);
     }
 
-    public void addToCart(String cartId, Long productId) {
+    public void addToCart(@NotBlank String cartId, @NotNull Long productId) {
         coreServiceIntegration.findById(productId).subscribe(productDto -> execute(cartId, cart -> cart.add(productDto)));
     }
 
-    public void removeFromCart(String cartId, Long productId) {
+    public void removeFromCart(@NotBlank String cartId, @NotNull Long productId) {
         execute(cartId, cart -> cart.remove(productId));
     }
 
-    public void changeProductQuantity(String cartId, Long id, Integer delta) {
+    public void changeProductQuantity(@NotBlank String cartId, @NotNull Long id, @NotNull Integer delta) {
         execute(cartId, cart -> cart.changeProductQuantity(id, delta));
     }
 
-    public void setProductQuantity(String cartId, Long id, Integer newQuantity) {
+    public void setProductQuantity(@NotBlank String cartId, @NotNull Long id, @NotNull @PositiveOrZero Integer newQuantity) {
         execute(cartId, cart -> cart.setProductQuantity(id, newQuantity));
     }
 
@@ -45,7 +51,7 @@ public class CartService {
         redisTemplate.opsForValue().set(cartId, cart);
     }
 
-    public void mergeCart(String username, String guestCartId) {
+    public void mergeCart(@NotBlank String username, @NotBlank String guestCartId) {
         Cart guestCart = getCurrentCart(guestCartId);
         if (guestCart.getItems().isEmpty()) return;
         Cart userCart = getCurrentCart(username);
@@ -54,11 +60,11 @@ public class CartService {
         updateCart(guestCartId, guestCart);
     }
 
-    public void updateCart(String cartId, Cart cart) {
+    public void updateCart(@NotBlank String cartId, @Valid Cart cart) {
         redisTemplate.opsForValue().set(cartId, cart);
     }
 
-    public void clearCart(String cartId) {
+    public void clearCart(@NotBlank String cartId) {
         execute(cartId, Cart::clear);
     }
 

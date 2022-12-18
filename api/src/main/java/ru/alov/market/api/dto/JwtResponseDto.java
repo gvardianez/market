@@ -1,8 +1,14 @@
 package ru.alov.market.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "Модель токена безопасности")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class JwtResponseDto {
 
     @Schema(description = "Строковое представление токена", required = true, example = "fsdffsdfsd.dfsdfsdfsdfdsfsdf.213wefwe3q2rwefserfwe")
@@ -10,27 +16,4 @@ public class JwtResponseDto {
 
     private String refreshToken;
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public JwtResponseDto() {
-    }
-
-    public JwtResponseDto(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-    }
 }

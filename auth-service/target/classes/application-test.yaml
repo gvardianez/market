@@ -9,7 +9,7 @@ spring:
     username: sa
     password:
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
@@ -19,5 +19,14 @@ spring:
       settings:
         web-allow-others: false
 jwt:
-  secret: h4f8093h4f983yhrt9834hr0934hf0hf493g493gf438rh438th34g34g
-  lifetime: 1000
+  access:
+    lifetime: 1000
+    secret: h4f8093h4f983yhrt9834hr0934hf0hf493g493gf438rh438th34g34g
+  flyway:
+    locations: classpath:/db/test
+#kafka:
+#  server: "localhost:9092"
+#  producer: "auth-service"
+#redis:
+#  host: "localhost"
+#  port: 6380

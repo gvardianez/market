@@ -6,6 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,9 +25,13 @@ public class PromotionItem {
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
+    @NotNull
     @Column(name = "product_id")
     private Long productId;
 
+    @NotNull
+    @Positive
+    @DecimalMax("99.99")
     @Column(name = "discount")
     private Float discount;
 
@@ -35,10 +42,6 @@ public class PromotionItem {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    public PromotionItem(Long productId, Float discount) {
-        this.productId = productId;
-    }
 
     public PromotionItem(Promotion promotion, Long productId, Float discount) {
         this.promotion = promotion;

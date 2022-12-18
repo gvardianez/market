@@ -13,12 +13,10 @@ import reactor.core.publisher.Flux;
 import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.PageDto;
 import ru.alov.market.api.dto.ProductDto;
-import ru.alov.market.api.dto.RequestByPeriodDto;
 import ru.alov.market.api.exception.AppError;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.converters.PageConverter;
 import ru.alov.market.core.converters.ProductConverter;
-import ru.alov.market.core.integrations.PromotionServiceIntegration;
 import ru.alov.market.core.services.ProductService;
 
 import java.time.LocalDateTime;

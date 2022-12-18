@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.alov.market.api.dto.RecoverPasswordDto;
+import ru.alov.market.api.dto.RecoverPasswordRequestDto;
 import ru.alov.market.api.dto.UserProfileDto;
 
 import java.util.HashMap;
@@ -48,13 +48,13 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, RecoverPasswordDto> recoverPasswordDtoProducerFactory() {
+    public ProducerFactory<String, RecoverPasswordRequestDto> recoverPasswordDtoProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<String, RecoverPasswordDto> recoverPasswordDtoKafkaTemplate() {
-        KafkaTemplate<String, RecoverPasswordDto> template = new KafkaTemplate<>(recoverPasswordDtoProducerFactory());
+    public KafkaTemplate<String, RecoverPasswordRequestDto> recoverPasswordDtoKafkaTemplate() {
+        KafkaTemplate<String, RecoverPasswordRequestDto> template = new KafkaTemplate<>(recoverPasswordDtoProducerFactory());
         template.setMessageConverter(new StringJsonMessageConverter());
         return template;
     }

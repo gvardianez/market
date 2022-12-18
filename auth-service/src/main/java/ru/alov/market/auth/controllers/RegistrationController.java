@@ -45,7 +45,7 @@ public class RegistrationController {
         return userProfileDto;
     }
 
-    @GetMapping("/confirm_email")
+    @GetMapping("/confirm-email")
     public void confirmUserEmail(@RequestParam(name = "username") String username,
                                  @RequestParam(name = "email") String email) {
         userService.confirmUserEmail(username, email);

@@ -2,7 +2,6 @@ package ru.alov.market.analytics.integrations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,6 +12,7 @@ import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.CoreServiceAppError;
 import ru.alov.market.api.exception.CoreServiceIntegrationException;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -20,18 +20,6 @@ import java.util.function.Function;
 public class CoreServiceIntegration {
 
     private final WebClient coreServiceWebClient;
-
-    public Mono<ResponseEntity<Void>> getTest() {
-        return coreServiceWebClient.get()
-                                   .uri("/api/v1/test")
-                                   .retrieve()
-                                   .onStatus(HttpStatus::is4xxClientError,
-                                           getClientResponseMonoFunction())
-                                   .onStatus(HttpStatus::is5xxServerError,
-                                           clientResponse -> Mono.error(new CoreServiceIntegrationException(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_INTERNAL_EXCEPTION.name())))
-                                   .toBodilessEntity();
-    }
-
 
     public Flux<ProductDto> getListProductDto(ListDto<Long> productIdList) {
         return coreServiceWebClient.post()
