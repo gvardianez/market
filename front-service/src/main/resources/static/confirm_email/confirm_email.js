@@ -2,7 +2,7 @@ angular.module('market').controller('confirmEmailController', function ($scope, 
 
     $scope.confirmEmail = function () {
         $http({
-            url: 'http://localhost:5555/auth/api/v1/registration/confirm_email/',
+            url: 'http://localhost:5555/auth/api/v1/registration/confirm-email/',
             method: 'GET',
             params: {
                 username: $routeParams["username"],

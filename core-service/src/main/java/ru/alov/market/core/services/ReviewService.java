@@ -2,6 +2,7 @@ package ru.alov.market.core.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.alov.market.api.dto.ReviewDto;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.entities.Order;
@@ -9,9 +10,13 @@ import ru.alov.market.core.entities.Product;
 import ru.alov.market.core.entities.Review;
 import ru.alov.market.core.repositories.ReviewRepository;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class ReviewService {
 
@@ -19,7 +24,7 @@ public class ReviewService {
     private final ProductService productService;
     private final OrderService orderService;
 
-    public Review createReview(String username, ReviewDto reviewDto) {
+    public Review createReview(@NotBlank String username, @Valid ReviewDto reviewDto) {
         Product product = productService.findById(reviewDto.getProductId()).orElseThrow(() -> {
             throw new ResourceNotFoundException("Продукт не найден, id = " + reviewDto.getProductId());
         });
@@ -33,7 +38,7 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    public Optional<Review> findReviewByUsernameAndProductId(String username, Long productId) {
+    public Optional<Review> findReviewByUsernameAndProductId(@NotBlank String username, @NotNull Long productId) {
         return reviewRepository.findByUsernameAndProductId(username, productId);
     }
 

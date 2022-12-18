@@ -14,13 +14,13 @@
     <p></p>
     <form ng-submit="changePassword()">
         <input type="password" class="form-control" required="required" id="oldUserPassword"
-               ng-model="changePasswordDto.oldPassword" placeholder="Старый пароль">
+               ng-model="changePasswordRequestDto.oldPassword" placeholder="Старый пароль">
         <br>
         <input type="password" class="form-control" required="required" id="newUserPassword"
-               ng-model="changePasswordDto.newPassword" placeholder="Новый пароль">
+               ng-model="changePasswordRequestDto.newPassword" placeholder="Новый пароль">
         <br>
         <input type="password" class="form-control" required="required" id="newConfirmUserPassword"
-               ng-model="changePasswordDto.confirmNewPassword" placeholder="Подтвердите новый пароль">
+               ng-model="changePasswordRequestDto.confirmNewPassword" placeholder="Подтвердите новый пароль">
         <br>
         <button type="submit"  class="btn btn-primary mb-3">Изменить пароль</button>
     </form>
