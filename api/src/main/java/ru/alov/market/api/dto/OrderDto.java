@@ -29,10 +29,12 @@ public class OrderDto {
     private BigDecimal totalPrice;
 
     @NotBlank
+    @Schema(description = "Имя заказчика", required = true, example = "Alex")
     private String userName;
 
     @NotNull
     @Email
+    @Schema(description = "Email заказчика", required = true, example = "Alex@ya.ru")
     private String email;
 
     @NotBlank
@@ -41,10 +43,11 @@ public class OrderDto {
 
     @NotBlank
     @Size(min = 6)
-    @Schema(description = "Телефон заказчика", required = true, example = "561461263")
+    @Schema(description = "Телефон заказчика", required = true, example = "561461263", minLength = 6)
     private String phone;
 
     @NotBlank
+    @Schema(description = "Статус заказа", required = true, example = "CREATED")
     private String status;
 
     private LocalDateTime createdAt;

@@ -14,6 +14,7 @@ import ru.alov.market.api.dto.ListDto;
 import ru.alov.market.api.dto.PageDto;
 import ru.alov.market.api.dto.ProductDto;
 import ru.alov.market.api.exception.AppError;
+import ru.alov.market.api.exception.CoreServiceAppError;
 import ru.alov.market.api.exception.ResourceNotFoundException;
 import ru.alov.market.core.converters.PageConverter;
 import ru.alov.market.core.converters.ProductConverter;
@@ -60,7 +61,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             description = "Продукт не найден", responseCode = "404",
-                            content = @Content(schema = @Schema(implementation = AppError.class))
+                            content = @Content(schema = @Schema(implementation = CoreServiceAppError.class))
                     )
             }
     )

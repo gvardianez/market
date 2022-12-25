@@ -32,7 +32,7 @@ public class AppConfig {
     private final AuthServiceIntegrationProperties authServiceIntegrationProperties;
 
     @Bean
-//    @LoadBalanced
+    @LoadBalanced
     public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }

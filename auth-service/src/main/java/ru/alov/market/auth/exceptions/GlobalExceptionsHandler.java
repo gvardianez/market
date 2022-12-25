@@ -8,7 +8,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.alov.market.api.exception.AuthServiceAppError;
@@ -70,7 +69,7 @@ public class GlobalExceptionsHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<AuthServiceAppError> handleMissingRequestValueExceptionException( MissingRequestValueException e) {
+    public ResponseEntity<AuthServiceAppError> handleMissingRequestValueExceptionException(MissingRequestValueException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_BAD_REQUEST.name(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
@@ -84,7 +83,7 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler
     public ResponseEntity<AuthServiceAppError> catchAnotherException(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_INTERNAL_EXCEPTION.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_INTERNAL_EXCEPTION.name(), HttpStatus.INTERNAL_SERVER_ERROR.name()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

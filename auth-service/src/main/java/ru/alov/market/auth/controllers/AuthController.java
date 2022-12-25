@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.alov.market.api.dto.*;
 import ru.alov.market.api.exception.AppError;
+import ru.alov.market.api.exception.AuthServiceAppError;
 import ru.alov.market.auth.services.AuthService;
 
 @RestController
@@ -28,20 +29,40 @@ public class AuthController {
                             content = @Content(schema = @Schema(implementation = ResponseEntity.class))
                     ),
                     @ApiResponse(
-                            description = "Некорректный логин или пароль", responseCode = "404",
-                            content = @Content(schema = @Schema(implementation = AppError.class))
+                            description = "Пользователь не найден", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = AuthServiceAppError.class))
+                    ),
+                    @ApiResponse(
+                            description = "Неверный пароль", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = AuthServiceAppError.class))
                     )
             }
     )
     @PostMapping()
-    public ResponseEntity<JwtResponseDto> login(@RequestBody JwtRequestDto authRequest) {
-        JwtResponseDto jwtResponseDto = authService.getJwtTokens(authRequest);
-        return ResponseEntity.ok(jwtResponseDto);
+    public JwtResponseDto login(@RequestBody JwtRequestDto authRequest) {
+        return authService.getJwtTokens(authRequest);
     }
 
+    @Operation(
+            summary = "Запрос на обновление токенов безопасности для пользователя",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                    ),
+                    @ApiResponse(
+                            description = "Вы не найдены в системе. Пожалуйста, перезайдите", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = AuthServiceAppError.class))
+                    ),
+                    @ApiResponse(
+                            description = "Неверный токен обновления. Пожалуйста перезайдите", responseCode = "400",
+                            content = @Content(schema = @Schema(implementation = AuthServiceAppError.class))
+                    )
+            }
+    )
     @PostMapping("/refresh-tokens")
-    public ResponseEntity<JwtResponseDto> refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
-        return ResponseEntity.ok(authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken()));
+    public JwtResponseDto refreshTokens(@RequestBody RefreshJwtRequest refreshJwtRequest) {
+        return authService.refreshJwtTokens(refreshJwtRequest.getRefreshToken());
     }
 
 }

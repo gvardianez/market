@@ -27,7 +27,9 @@ public class AnalyticsIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    public static ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public static LocalDateTime localDateTimeStartFirstTest;
     public static LocalDateTime localDateTimeStartOtherTests;
     public static LocalDateTime localDateTimeEnd;
@@ -35,7 +37,6 @@ public class AnalyticsIntegrationTest {
 
     @BeforeAll
     public static void init() {
-        objectMapper = new ObjectMapper();
         localDateTimeStartFirstTest = LocalDateTime.of(2022, 12, 15, 1, 0);
         localDateTimeStartOtherTests = LocalDateTime.of(2022, 12, 6, 1, 0);
         localDateTimeEnd = LocalDateTime.of(2022, 12, 16, 1, 0);
@@ -66,9 +67,6 @@ public class AnalyticsIntegrationTest {
 
         String ratingDtoFlux = restTemplate.postForObject("/api/v1/analytical/product-quantity-cost-rating-period", requestRatingDto, String.class);
 
-        TypeReference<List<ProductRatingDto>> typeReference = new TypeReference<>() {
-        };
-
         List<ProductRatingDto> productRatingDto = objectMapper.readValue(ratingDtoFlux, typeReference);
 
         Assertions.assertEquals(3, productRatingDto.size());
@@ -87,9 +85,6 @@ public class AnalyticsIntegrationTest {
 
         String ratingDtoFlux = restTemplate.postForObject("/api/v1/analytical/product-quantity-cost-rating-period", requestRatingDto, String.class);
 
-        TypeReference<List<ProductRatingDto>> typeReference = new TypeReference<>() {
-        };
-
         List<ProductRatingDto> productRatingDto = objectMapper.readValue(ratingDtoFlux, typeReference);
 
         Assertions.assertEquals(2, productRatingDto.size());
@@ -101,7 +96,7 @@ public class AnalyticsIntegrationTest {
     }
 
     @Test
-    public void AnalyticsControllerUserProductsRatingForPeriodTest() throws JsonProcessingException {
+    public void AnalyticsControllerUserProductsRatingForPeriodTest() {
         RequestRatingDto requestRatingDto = new RequestRatingDto("bob", localDateTimeStartOtherTests, localDateTimeEnd, null);
 
         UserProductsRatingDto userProductsRatingDto = restTemplate.postForObject("/api/v1/analytical/user-products-rating-period", requestRatingDto, UserProductsRatingDto.class);

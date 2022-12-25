@@ -65,7 +65,7 @@ public class Cart {
                 return;
             }
         }
-        throw new ResourceNotFoundException("Product not found, id = " + id);
+        throw new ResourceNotFoundException("Продукт не найден, id = " + id);
     }
 
     public void setProductQuantity(Long id, Integer newQuantity) {
@@ -80,7 +80,7 @@ public class Cart {
                 return;
             }
         }
-        throw new ResourceNotFoundException("Product not found, id = " + id);
+        throw new ResourceNotFoundException("Продукт не найден, id = " + id);
     }
 
     public void remove(Long productId) {
