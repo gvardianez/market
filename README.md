@@ -82,3 +82,24 @@ $ docker pull logstash:7.17.7
 ТЗ проекта: https://docs.google.com/document/d/1P45o5gSSg86HlPH3l6WyDaRnuW_Z0CQIPdBJMuCBjBE/edit?usp=sharing
 
 Конфиг репозиторий https://github.com/gvardianez/market-configs
+
+Некоторые скриншоты работы сайта:
+https://ibb.co/rHsjG0P
+https://ibb.co/9WFKDcp
+https://ibb.co/bzCkHNw
+https://ibb.co/6sfr0dQ
+https://ibb.co/fS8Kkz5
+https://ibb.co/sPswvZ5
+https://ibb.co/Fhngjs1
+https://ibb.co/4Nwsxyc
+https://ibb.co/N3MQyTv
+https://ibb.co/sKPSH68
+https://ibb.co/604znR3
+https://ibb.co/FXVrRYB
+https://ibb.co/vYpNVPH
+https://ibb.co/wY5qRPX
+https://ibb.co/Gc28H9d
+https://ibb.co/9sP20jD
+https://ibb.co/fHtjKkf
+https://ibb.co/BT3SnGz
+
