@@ -71,7 +71,7 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler
     public ResponseEntity<AnalyticsServiceAppError> catchAnotherException(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new AnalyticsServiceAppError(AnalyticsServiceAppError.AnalyticsServiceErrors.ANALYTICS_SERVICE_INTERNAL_EXCEPTION.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AnalyticsServiceAppError(AnalyticsServiceAppError.AnalyticsServiceErrors.ANALYTICS_SERVICE_INTERNAL_EXCEPTION.name(), HttpStatus.INTERNAL_SERVER_ERROR.name()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

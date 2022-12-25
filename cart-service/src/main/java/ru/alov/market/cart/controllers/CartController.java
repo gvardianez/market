@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.alov.market.api.dto.CartDto;
 import ru.alov.market.api.dto.StringResponseDto;
+import ru.alov.market.api.dto.UserProfileDto;
+import ru.alov.market.api.exception.AuthServiceAppError;
+import ru.alov.market.api.exception.CartServiceAppError;
 import ru.alov.market.cart.converters.CartConverter;
 import ru.alov.market.cart.services.CartService;
 
@@ -92,18 +95,50 @@ public class CartController {
         cartService.mergeCart(username, guestCartId);
     }
 
-    @GetMapping("/{guestCartId}/change_quantity")
+    @Operation(
+            summary = "Запрос на изменение количества товаров в корзине по конкретной дельте",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Продукт не найден", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = CartServiceAppError.class))
+                    )
+            }
+    )
+    @GetMapping("/{guestCartId}/change-quantity")
     public void changeProductQuantityInCart(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @RequestParam Long productId, @RequestParam Integer delta) {
         String currentCartId = selectCartId(username, guestCartId);
         cartService.changeProductQuantity(currentCartId, productId, delta);
     }
 
-    @GetMapping("/{guestCartId}/set_quantity")
+    @Operation(
+            summary = "Запрос на изменение количества товаров в корзине на произвольное количество",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Продукт не найден", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = CartServiceAppError.class))
+                    )
+            }
+    )
+    @GetMapping("/{guestCartId}/set-quantity")
     public void setNewQuantity(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @RequestParam Long productId, @RequestParam Integer newQuantity) {
         String currentCartId = selectCartId(username, guestCartId);
         cartService.setProductQuantity(currentCartId, productId, newQuantity);
     }
 
+    @Operation(
+            summary = "Запрос на удаление позиции товара в корзине",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200"
+                    )
+            }
+    )
     @GetMapping("/{guestCartId}/remove/{productId}")
     public void remove(@RequestHeader(required = false) String username, @PathVariable String guestCartId, @PathVariable Long productId) {
         String currentCartId = selectCartId(username, guestCartId);

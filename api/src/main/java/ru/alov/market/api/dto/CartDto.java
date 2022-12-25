@@ -16,7 +16,7 @@ import java.util.List;
 public class CartDto {
 
     @NotNull
-    @Schema(description = "Список элементов корзины", required = true, example = "1 Конфеты 2 100.00 200.00")
+    @Schema(description = "Список элементов корзины", required = true)
     private List<CartItemDto> items;
 
     @NotNull
