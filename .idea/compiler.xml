@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="config-server" />
+        <module name="front-service" />
+        <module name="cart-service" />
+        <module name="auth-service" />
+        <module name="messaging-service" />
+        <module name="gateway-service" />
+        <module name="analytics-service" />
+        <module name="api" />
+        <module name="core-service" />
+        <module name="discovery-service" />
+      </profile>
+      <profile name="Annotation profile for MyMarket" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.4.2.Final/mapstruct-processor-1.4.2.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.4.2.Final/mapstruct-1.4.2.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+        </processorPath>
+        <module name="promotion-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="zipkin-server" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="analytics-service" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
+      <module name="cart-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="core-service" options="-parameters" />
+      <module name="discovery-service" options="-parameters" />
+      <module name="front-service" options="-parameters" />
+      <module name="gateway-service" options="-parameters" />
+      <module name="messaging-service" options="-parameters" />
+      <module name="promotion-service" options="-parameters" />
+      <module name="zipkin-server" options="-parameters" />
+    </option>
+  </component>
+</project>
